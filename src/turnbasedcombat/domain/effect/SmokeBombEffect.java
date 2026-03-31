@@ -4,22 +4,20 @@ import turnbasedcombat.domain.character.Combatant;
 
 public class SmokeBombEffect implements StatusEffect {
     private int duration;
-    private final int evasionBoost;
     private final String name = "Smoke Screen";
 
-    public SmokeBombEffect(int duration, int evasionBoost) {
+    public SmokeBombEffect(int duration) {
         this.duration = duration;
-        this.evasionBoost = evasionBoost;
     }
 
     @Override
     public void apply(Combatant target) {
-        target.modifySpeed(evasionBoost);
+        
     }
 
     @Override
     public void remove(Combatant target) {
-        target.modifySpeed(-evasionBoost);
+     
     }
 
     @Override
@@ -42,7 +40,8 @@ public class SmokeBombEffect implements StatusEffect {
         return duration;
     }
 
-    public int getEvasionBoost() {
-        return evasionBoost;
+    @Override
+    public int modifyIncomingDamage(int damage) {
+        return 0;
     }
 }
