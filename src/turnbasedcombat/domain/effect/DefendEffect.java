@@ -5,6 +5,7 @@ import turnbasedcombat.domain.character.Combatant;
 public class DefendEffect implements StatusEffect {
     private int duration;
     private final String name = "Defending";
+    private final int defenseBoost = 10; 
 
     public DefendEffect(int duration) {
         this.duration = duration;
@@ -12,12 +13,12 @@ public class DefendEffect implements StatusEffect {
 
     @Override
     public void apply(Combatant target) {
-        target.setDefending(true);
+        target.modifyDefense(defenseBoost);
     }
 
     @Override
     public void remove(Combatant target) {
-        target.setDefending(false);
+        target.modifyDefense(-defenseBoost);
     }
 
     @Override
