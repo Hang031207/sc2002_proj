@@ -5,8 +5,7 @@ import turnbasedcombat.domain.effect.SmokeBombEffect;
 
 public class SmokeBomb implements Item {
     private final String name = "Smoke Bomb";
-    private final String description = "Creates a smoke screen, increasing evasion for 2 turns.";
-    private final int evasionBoost = 5;
+    private final String description = "Enemy attacks deal exactly 0 damage for current turn and next turn.";
     private final int duration = 2;
 
     @Override
@@ -21,6 +20,6 @@ public class SmokeBomb implements Item {
 
     @Override
     public void use(Combatant user, Combatant target) {
-        target.addStatusEffect(new SmokeBombEffect(duration, evasionBoost));
+        target.addStatusEffect(new SmokeBombEffect(duration));
     }
 }
