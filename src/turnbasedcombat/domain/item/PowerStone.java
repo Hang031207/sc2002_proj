@@ -4,8 +4,7 @@ import turnbasedcombat.domain.character.Combatant;
 
 public class PowerStone implements Item {
     private final String name = "Power Stone";
-    private final String description = "Temporarily increases attack power by 10 for the rest of the battle.";
-    private final int attackBoost = 10;
+    private final String description = "Trigger the character's special skill for free without changing the cooldown timer.";
 
     @Override
     public String getName() {
@@ -19,6 +18,6 @@ public class PowerStone implements Item {
 
     @Override
     public void use(Combatant user, Combatant target) {
-        target.modifyAttack(attackBoost);
+        
     }
 }
