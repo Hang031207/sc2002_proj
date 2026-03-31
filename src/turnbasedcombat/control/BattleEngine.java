@@ -1,131 +1,133 @@
 package turnbasedcombat.control;
 
+import turnbasedcombat.domain.Level;
 import turnbasedcombat.domain.character.Combatant;
 import turnbasedcombat.domain.action.Action;
 import turnbasedcombat.domain.effect.StatusEffect;
 import turnbasedcombat.domain.effect.StunEffect;
-import turnbasedcombat.domain.strategy.EnemyStrategy;
 import turnbasedcombat.boundary.GameCLI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 public class BattleEngine {
-    private final List<Combatant> playerTeam;
-    private final List<Combatant> enemyTeam;
-    private final TurnOrderStrategy turnOrderStrategy;
-    private final GameCLI cli;
-    private final Map<Combatant, EnemyStrategy> enemyStrategies;
-    private int turnCount;
+    private int roundCount;
+    private List<Combatant> playerTeam;
+    private List<Combatant> enemyTeam;
+    private TurnOrderStrategy turnStrategy;
+    private GameCLI cli;
+    private Level currentLevel;
 
-    public BattleEngine(List<Combatant> playerTeam, List<Combatant> enemyTeam,
-                        TurnOrderStrategy turnOrderStrategy, GameCLI cli) {
+    public BattleEngine(List<Combatant> playerTeam, Level level, TurnOrderStrategy turnStrategy, GameCLI cli) {
         this.playerTeam = new ArrayList<>(playerTeam);
-        this.enemyTeam = new ArrayList<>(enemyTeam);
-        this.turnOrderStrategy = turnOrderStrategy;
+        this.currentLevel = level;
+        this.enemyTeam = currentLevel.getInitialEnemies(); // Load from Level
+        this.turnStrategy = turnStrategy;
         this.cli = cli;
-        this.enemyStrategies = new HashMap<>();
-        this.turnCount = 0;
-    }
-
-    public void setEnemyStrategy(Combatant enemy, EnemyStrategy strategy) {
-        enemyStrategies.put(enemy, strategy);
+        this.roundCount = 0;
     }
 
     public boolean runBattle() {
         cli.displayBattleStart(playerTeam, enemyTeam);
 
-        while (!isBattleOver()) {
-            turnCount++;
-            cli.displayTurnStart(turnCount);
-
-            List<Combatant> allCombatants = getAllCombatants();
-            List<Combatant> turnOrder = turnOrderStrategy.determineTurnOrder(allCombatants);
-
-            for (Combatant combatant : turnOrder) {
-                if (!combatant.isAlive()) {
-                    continue;
-                }
-
-                if (isStunned(combatant)) {
-                    cli.displayStunned(combatant);
-                    combatant.tickStatusEffects();
-                    continue;
-                }
-
-                executeTurn(combatant, allCombatants);
-
-                if (isBattleOver()) {
-                    break;
-                }
-            }
-
-            cli.displayTurnEnd(playerTeam, enemyTeam);
+        while (!checkGameEndingCondition()) {
+            processRound();
         }
 
         boolean playerWon = isTeamAlive(playerTeam);
-        cli.displayBattleEnd(playerWon);
+        // Note: You will need to make sure GameCLI has displayResults(playerWon, roundCount)
+        cli.displayBattleEnd(playerWon); 
         return playerWon;
     }
 
-    private void executeTurn(Combatant combatant, List<Combatant> allCombatants) {
-        cli.displayCombatantTurn(combatant);
+    public void processRound() {
+        roundCount++;
+        cli.displayTurnStart(roundCount);
 
-        Action action;
-        Combatant target;
+        List<Combatant> allCombatants = getAllCombatants();
+        List<Combatant> turnOrder = turnStrategy.determineOrder(allCombatants);
 
-        if (playerTeam.contains(combatant)) {
-            action = cli.getPlayerAction(combatant);
-            target = cli.getPlayerTarget(combatant, action, enemyTeam, playerTeam);
-        } else {
-            EnemyStrategy strategy = enemyStrategies.get(combatant);
-            if (strategy != null) {
-                action = strategy.decideAction(combatant, enemyTeam, playerTeam);
-                target = strategy.selectTarget(combatant, playerTeam);
-            } else {
-                return;
+        for (Combatant combatant : turnOrder) {
+            if (!combatant.isAlive() || checkGameEndingCondition()) continue;
+
+            // 1. UML Requirement: Apply existing status effects first
+            applyStatusEffects(combatant);
+
+            // 2. UML Requirement: Check for stun
+            if (isStunned(combatant)) {
+                cli.displayStunned(combatant);
+                updateCoolDown(combatant); // Still update cooldowns if turn was skipped via Stun
+                continue;
             }
-        }
 
-        if (target != null && action.canExecute(combatant)) {
-            cli.displayActionExecution(combatant, action, target);
-            action.execute(combatant, target, allCombatants);
-            cli.displayActionResult(combatant, action, target);
-        }
+            // 3. Take Turn
+            executeTurnLogic(combatant, allCombatants);
 
-        combatant.tickStatusEffects();
+            // 4. UML Requirement: Update Cooldowns after turn
+            updateCoolDown(combatant);
+        }
+        
+        // 5. Advanced Logic Requirement: Check Backup Spawns at end of round
+        triggerBackupSpawn();
+        cli.displayTurnEnd(playerTeam, enemyTeam);
+    }
+
+    public void applyStatusEffects(Combatant c) {
+        // Tick durations and remove expired ones before they act
+        c.tickStatusEffects(); 
+    }
+
+    public void updateCoolDown(Combatant c) {
+        // Decrease cooldown only if a turn took place (as per assignment rules)
+        if (c.getSpecialCooldown() > 0) {
+            c.setSpecialCooldown(c.getSpecialCooldown() - 1);
+        }
+    }
+
+    public boolean checkGameEndingCondition() {
+        // Game ends if players are dead OR (all enemies dead AND no backups left)
+        boolean playersDead = !isTeamAlive(playerTeam);
+        boolean enemiesDead = !isTeamAlive(enemyTeam) && (!currentLevel.hasBackupSpawns() || currentLevel.isBackupTriggered());
+        return playersDead || enemiesDead;
+    }
+
+    public void triggerBackupSpawn() {
+        if (!isTeamAlive(enemyTeam) && currentLevel.hasBackupSpawns() && !currentLevel.isBackupTriggered()) {
+            cli.displayMessage("\nWARNING: Backup enemies have arrived!");
+            enemyTeam.addAll(currentLevel.getBackupEnemies());
+            currentLevel.setBackupTriggered(true);
+        }
+    }
+
+    private void executeTurnLogic(Combatant combatant, List<Combatant> allCombatants) {
+        cli.displayCombatantTurn(combatant);
+        // The entity manages its own strategy or user input via the abstract takeTurn method
+        combatant.takeTurn(this); 
     }
 
     private boolean isStunned(Combatant combatant) {
         for (StatusEffect effect : combatant.getStatusEffects()) {
-            if (effect instanceof StunEffect) {
+            if (effect instanceof StunEffect && !effect.isExpired()) {
                 return true;
             }
         }
         return false;
     }
 
-    private List<Combatant> getAllCombatants() {
+    public List<Combatant> getAllCombatants() {
         List<Combatant> all = new ArrayList<>(playerTeam);
         all.addAll(enemyTeam);
         return all;
     }
-
-    private boolean isBattleOver() {
-        return !isTeamAlive(playerTeam) || !isTeamAlive(enemyTeam);
-    }
+    
+    // Getters so Entities can access targets during takeTurn()
+    public List<Combatant> getPlayerTeam() { return playerTeam; }
+    public List<Combatant> getEnemyTeam() { return enemyTeam; }
+    public GameCLI getCli() { return cli; }
 
     private boolean isTeamAlive(List<Combatant> team) {
         for (Combatant c : team) {
-            if (c.isAlive()) {
-                return true;
-            }
+            if (c.isAlive()) return true;
         }
         return false;
-    }
-
-    public int getTurnCount() {
-        return turnCount;
     }
 }
