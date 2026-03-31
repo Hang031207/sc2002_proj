@@ -151,4 +151,5 @@ public abstract class Combatant {
     public abstract String getSpecialSkillName();
     public abstract String getSpecialSkillDescription();
     public abstract int getSpecialSkillManaCost();
+    public abstract void executeSpecialSkill(Combatant target, List<Combatant> allCombatants);
 }

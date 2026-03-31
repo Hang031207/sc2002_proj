@@ -4,5 +4,5 @@ import turnbasedcombat.domain.character.Combatant;
 import java.util.List;
 
 public interface TurnOrderStrategy {
-    List<Combatant> determineTurnOrder(List<Combatant> combatants);
+    List<Combatant> determineOrder(List<Combatant> combatants);
 }

@@ -25,4 +25,19 @@ public class SpecialSkill implements Action {
     public boolean canExecute(Combatant performer) {
         return performer.isAlive();
     }
+
+    @Override
+    public void execute(Combatant performer, Combatant target, List<Combatant> allCombatants) {
+        // 1. Execute the character's specific skill
+        performer.executeSpecialSkill(target, allCombatants);
+        
+        // 2. Set the cooldown to 3 (you will need to add setSpecialCooldown() to Combatant)
+        performer.setSpecialCooldown(3);
+    }
+
+    @Override
+    public boolean canExecute(Combatant performer) {
+        // Can only execute if alive AND cooldown is 0
+        return performer.isAlive() && performer.getSpecialCooldown() == 0;
+    }
 }
