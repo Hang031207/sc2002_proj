@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Defend implements Action {
     private final String name = "Defend";
-    private final String description = "Take a defensive stance, reducing incoming damage by half until next turn.";
+    private final String description = "Increases Defense by 10 for current and next round.";
 
     @Override
     public String getName() {
@@ -20,8 +20,7 @@ public class Defend implements Action {
 
     @Override
     public void execute(Combatant performer, Combatant target, List<Combatant> allCombatants) {
-        DefendEffect defendEffect = new DefendEffect(1);
-        performer.addStatusEffect(defendEffect);
+        performer.addStatusEffect(new DefendEffect(2));
     }
 
     @Override
