@@ -4,8 +4,7 @@ import turnbasedcombat.domain.character.Combatant;
 
 public class Potion implements Item {
     private final String name = "Health Potion";
-    private final String description = "Restores 30 HP to the target.";
-    private final int healAmount = 30;
+    private final String description = "Restores HP to full.";
 
     @Override
     public String getName() {
@@ -19,6 +18,7 @@ public class Potion implements Item {
 
     @Override
     public void use(Combatant user, Combatant target) {
+        int healAmount = target.getMaxHp() - target.getHp();
         target.heal(healAmount);
     }
 }
