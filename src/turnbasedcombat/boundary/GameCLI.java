@@ -214,4 +214,15 @@ public class GameCLI {
         System.out.print(prompt);
         return scanner.nextLine().trim();
     }
+
+    public void startGame() {
+        System.out.println("=========================================");
+        System.out.println("Welcome to the Turn-Based Combat Game!");
+        System.out.println("Course: SC2002 - OOP");
+        System.out.println("Group: xxx");
+        System.out.println("Group members: xxx,yyy,zzz");
+        System.out.println("=========================================\n");
+
+        // Additional setup or main menu logic can go here
+    }
 }

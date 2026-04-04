@@ -1,10 +1,14 @@
 package turnbasedcombat.domain.character;
 
+import java.util.List;
+
+import turnbasedcombat.control.BattleEngine;
+import turnbasedcombat.domain.effect.ArcaneBlastBoost;
+
 public class Wizard extends Combatant {
-    private static final int ARCANE_BLAST_MANA_COST = 25;
 
     public Wizard(String name) {
-        super(name, 80, 25, 5, 7, 100);
+        super(name, 200, 50, 10, 20);
     }
 
     public Wizard() {
@@ -22,7 +26,16 @@ public class Wizard extends Combatant {
     }
 
     @Override
-    public int getSpecialSkillManaCost() {
-        return ARCANE_BLAST_MANA_COST;
+    public void executeSpecialSkill(Combatant target, List<Combatant> allEnemies) {
+        // Assume allEnemies is already the list of surviving enemies, deal damage to all of them
+        int damage = this.getAttack(); // Base damage plus bonus
+        for (Combatant c : allEnemies) {
+            c.takeDamage(damage);
+        }
+        
+        this.addStatusEffect(new ArcaneBlastBoost(1,10)); // Not sure what does 'lasting until end of the level mean'
     }
+
+    @Override
+    public void takeTurn(BattleEngine engine){}
 }

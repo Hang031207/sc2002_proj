@@ -1,6 +1,8 @@
 package turnbasedcombat.domain.action;
 
 import turnbasedcombat.domain.character.Combatant;
+import turnbasedcombat.domain.strategy.EnemyStrategy;
+
 import java.util.List;
 
 public class BasicAttack implements Action {
@@ -18,8 +20,12 @@ public class BasicAttack implements Action {
     }
 
     @Override
-    public void execute(Combatant performer, Combatant target, List<Combatant> allCombatants) {
+    public void execute(Combatant performer, List<Combatant> allCombatants) {
         int damage = performer.getAttack();
+
+        EnemyStrategy strategy = new BasicAttackStrategy();
+        Combatant target = strategy.selectTarget(allCombatants);
+
         target.takeDamage(damage);
     }
 

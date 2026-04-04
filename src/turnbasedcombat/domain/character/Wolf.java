@@ -1,10 +1,13 @@
 package turnbasedcombat.domain.character;
 
+import turnbasedcombat.control.BattleEngine;
+import turnbasedcombat.domain.action.Action;
+import turnbasedcombat.domain.action.BasicAttack;
+
 public class Wolf extends Combatant {
-    private static final int FEROCIOUS_BITE_MANA_COST = 8;
 
     public Wolf(String name) {
-        super(name, 60, 15, 3, 10, 15);
+        super(name, 40, 45, 5, 35);
     }
 
     public Wolf() {
@@ -12,17 +15,12 @@ public class Wolf extends Combatant {
     }
 
     @Override
-    public String getSpecialSkillName() {
-        return "Ferocious Bite";
+    public void takeTurn(BattleEngine engine) {
+        // Wolf's turn logic
+        if (!this.isAlive()) return; // Skip turn if dead
+        Combatant players = engine.getPlayerTeam();
+        Action basicAttack = new BasicAttack();
+        basicAttack.execute(this, players);
     }
 
-    @Override
-    public String getSpecialSkillDescription() {
-        return "A savage bite that deals extra damage to wounded targets.";
-    }
-
-    @Override
-    public int getSpecialSkillManaCost() {
-        return FEROCIOUS_BITE_MANA_COST;
-    }
 }

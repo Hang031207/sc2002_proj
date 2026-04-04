@@ -1,10 +1,11 @@
 package turnbasedcombat.domain.character;
 
+import turnbasedcombat.control.BattleEngine;
+
 public class Warrior extends Combatant {
-    private static final int SHIELD_BASH_MANA_COST = 15;
 
     public Warrior(String name) {
-        super(name, 120, 18, 12, 5, 30);
+        super(name, 260, 40, 20, 30);
     }
 
     public Warrior() {
@@ -18,11 +19,18 @@ public class Warrior extends Combatant {
 
     @Override
     public String getSpecialSkillDescription() {
-        return "A powerful bash that deals damage and may stun the target.";
+        return "A powerful bash that deals damage and stun the target.";
     }
 
     @Override
-    public int getSpecialSkillManaCost() {
-        return SHIELD_BASH_MANA_COST;
+    public void executeSpecialSkill(Combatant target, List<Combatant> allEnemies) {
+        // Implementation of Shield Bash effect
+        int damage = this.getAttack();
+        target.takeDamage(damage);
+        target.addStatusEffect(new StunEffect(2)); // Stun for 2 turns
     }
+
+    @Override
+    public void takeTurn(BattleEngine engine){}
+
 }
