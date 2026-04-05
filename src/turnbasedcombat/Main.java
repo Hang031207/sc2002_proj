@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) {
         GameCLI cli = new GameCLI();
         
-        // 1. Loading Screen & Character Selection
+        
         cli.displayMessage("========================================");
         cli.displayMessage("    WELCOME TO TURN-BASED COMBAT!       ");
         cli.displayMessage("========================================");
@@ -31,7 +31,6 @@ public class Main {
         int classChoice = cli.getIntInput(1, 2);
         Combatant player = (classChoice == 1) ? new Warrior("Hero (Warrior)") : new Wizard("Hero (Wizard)");
 
-        // 2. Item Selection (Choose 2)
         cli.displayMessage("\nSelect two items for your inventory:");
         cli.displayMessage("1. Potion (Heals 100 HP)");
         cli.displayMessage("2. Power Stone (Free Special Skill)");
@@ -48,7 +47,6 @@ public class Main {
         List<Combatant> playerTeam = new ArrayList<>();
         playerTeam.add(player);
 
-        // 3. Difficulty / Level Selection
         cli.displayMessage("\nSelect Difficulty Level:");
         cli.displayMessage("1. Easy   (3 Goblins)");
         cli.displayMessage("2. Medium (1 Goblin, 1 Wolf + Backup Wolves)");
@@ -57,11 +55,9 @@ public class Main {
         int levelChoice = cli.getIntInput(1, 3);
         Level level = new Level(levelChoice);
 
-        // 4. Start the Interactive Engine
         TurnOrderStrategy strategy = new SpeedTurnStrategy();
         BattleEngine engine = new BattleEngine(playerTeam, level, strategy, cli);
         
-        // This method contains your while-loop that makes the game interactive!
         engine.runBattle(); 
     }
 }

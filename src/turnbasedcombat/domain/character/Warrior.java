@@ -1,36 +1,30 @@
 package turnbasedcombat.domain.character;
 
+import turnbasedcombat.domain.effect.StunEffect;
+import turnbasedcombat.domain.action.Action;
 import turnbasedcombat.control.BattleEngine;
+import java.util.List;
 
 public class Warrior extends Combatant {
-
     public Warrior(String name) {
-        super(name, 260, 40, 20, 30);
-    }
-
-    public Warrior() {
-        this("Warrior");
+        super(name, 260, 40, 20, 30); 
     }
 
     @Override
-    public String getSpecialSkillName() {
-        return "Shield Bash";
+    public void executeSpecialSkill(Combatant target, List<Combatant> allCombatants) {
+        target.takeDamage(this.attack);
+        target.addStatusEffect(new StunEffect(2));
     }
 
     @Override
-    public String getSpecialSkillDescription() {
-        return "A powerful bash that deals damage and stun the target.";
+    public void takeTurn(BattleEngine engine) {
+        Action action = engine.getCli().getPlayerAction(this);
+        Combatant target = engine.getCli().getPlayerTarget(this, action, engine.getEnemyTeam(), engine.getPlayerTeam());
+        
+        if (target != null && action.canExecute(this)) {
+            engine.getCli().displayActionExecution(this, action, target);
+            action.execute(this, target, engine.getAllCombatants());
+            engine.getCli().displayActionResult(this, action, target);
+        }
     }
-
-    @Override
-    public void executeSpecialSkill(Combatant target, List<Combatant> allEnemies) {
-        // Implementation of Shield Bash effect
-        int damage = this.getAttack();
-        target.takeDamage(damage);
-        target.addStatusEffect(new StunEffect(2)); // Stun for 2 turns
-    }
-
-    @Override
-    public void takeTurn(BattleEngine engine){}
-
 }

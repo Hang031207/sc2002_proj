@@ -1,41 +1,36 @@
 package turnbasedcombat.domain.character;
 
+import turnbasedcombat.domain.action.Action;
+import turnbasedcombat.control.BattleEngine;
 import java.util.List;
 
-import turnbasedcombat.control.BattleEngine;
-import turnbasedcombat.domain.effect.ArcaneBlastBoost;
-
 public class Wizard extends Combatant {
-
     public Wizard(String name) {
-        super(name, 200, 50, 10, 20);
-    }
-
-    public Wizard() {
-        this("Wizard");
+        super(name, 200, 50, 10, 20); 
     }
 
     @Override
-    public String getSpecialSkillName() {
-        return "Arcane Blast";
-    }
-
-    @Override
-    public String getSpecialSkillDescription() {
-        return "A powerful magical attack that deals heavy damage and boosts next attack.";
-    }
-
-    @Override
-    public void executeSpecialSkill(Combatant target, List<Combatant> allEnemies) {
-        // Assume allEnemies is already the list of surviving enemies, deal damage to all of them
-        int damage = this.getAttack(); // Base damage plus bonus
-        for (Combatant c : allEnemies) {
-            c.takeDamage(damage);
+    public void executeSpecialSkill(Combatant target, List<Combatant> allCombatants) {
+        for (Combatant enemy : allCombatants) {
+            if ((enemy instanceof Goblin || enemy instanceof Wolf) && enemy.isAlive()) {
+                enemy.takeDamage(this.attack);
+                if (!enemy.isAlive()) {
+                    this.modifyAttack(10);
+                    System.out.println(this.name + " gained +10 ATK from defeating " + enemy.getName() + "!");
+                }
+            }
         }
-        
-        this.addStatusEffect(new ArcaneBlastBoost(1,10)); // Not sure what does 'lasting until end of the level mean'
     }
 
     @Override
-    public void takeTurn(BattleEngine engine){}
+    public void takeTurn(BattleEngine engine) {
+        Action action = engine.getCli().getPlayerAction(this);
+        Combatant c_target = engine.getCli().getPlayerTarget(this, action, engine.getEnemyTeam(), engine.getPlayerTeam());
+        
+        if (c_target != null && action.canExecute(this)) {
+            engine.getCli().displayActionExecution(this, action, c_target);
+            action.execute(this, c_target, engine.getAllCombatants());
+            engine.getCli().displayActionResult(this, action, c_target);
+        }
+    }
 }

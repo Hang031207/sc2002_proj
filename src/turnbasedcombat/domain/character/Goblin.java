@@ -1,26 +1,23 @@
 package turnbasedcombat.domain.character;
 
+import turnbasedcombat.domain.strategy.EnemyStrategy;
+import turnbasedcombat.domain.strategy.BasicAttackStrategy;
 import turnbasedcombat.control.BattleEngine;
-import turnbasedcombat.domain.action.Action;
-import turnbasedcombat.domain.action.BasicAttack;
-import turnbasedcombat.domain.strategy;
+import java.util.List;
 
 public class Goblin extends Combatant {
+    private EnemyStrategy strategy;
 
     public Goblin(String name) {
-        super(name, 50,35, 15, 25);
-    }
-
-    public Goblin() {
-        this("Goblin");
+        super(name, 55, 35, 15, 25);
+        this.strategy = new BasicAttackStrategy();
     }
 
     @Override
+    public void executeSpecialSkill(Combatant target, List<Combatant> allCombatants) {}
+
+    @Override
     public void takeTurn(BattleEngine engine) {
-        // Goblin's turn logic
-        if (!this.isAlive()) return; // Skip turn if dead
-        Combatant players = engine.getPlayerTeam();
-        Action basicAttack = new BasicAttack();
-        basicAttack.execute(this, players);
+        strategy.executeTurn(this, engine);
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public class SpeedTurnStrategy implements TurnOrderStrategy {
 
     @Override
-    public List<Combatant> determineTurnOrder(List<Combatant> combatants) {
+    public List<Combatant> determineOrder(List<Combatant> combatants) {
         List<Combatant> aliveCombatants = new ArrayList<>();
 
         for (Combatant c : combatants) {
@@ -17,6 +17,7 @@ public class SpeedTurnStrategy implements TurnOrderStrategy {
             }
         }
 
+        // Sort descending by speed
         aliveCombatants.sort(Comparator.comparingInt(Combatant::getSpeed).reversed());
 
         return aliveCombatants;

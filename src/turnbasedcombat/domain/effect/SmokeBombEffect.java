@@ -5,6 +5,9 @@ import turnbasedcombat.domain.character.Combatant;
 public class SmokeBombEffect implements StatusEffect {
     private int duration;
     private final String name = "Smoke Screen";
+    
+    // A massive defense boost ensures incoming damage math always results in 0
+    private final int damageNegationBoost = 9999; 
 
     public SmokeBombEffect(int duration) {
         this.duration = duration;
@@ -12,12 +15,12 @@ public class SmokeBombEffect implements StatusEffect {
 
     @Override
     public void apply(Combatant target) {
-        
+        target.modifyDefense(damageNegationBoost);
     }
 
     @Override
     public void remove(Combatant target) {
-     
+        target.modifyDefense(-damageNegationBoost);
     }
 
     @Override
@@ -38,10 +41,5 @@ public class SmokeBombEffect implements StatusEffect {
     @Override
     public int getRemainingDuration() {
         return duration;
-    }
-
-    @Override
-    public int modifyIncomingDamage(int damage) {
-        return 0;
     }
 }
