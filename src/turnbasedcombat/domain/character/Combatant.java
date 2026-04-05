@@ -12,21 +12,17 @@ public abstract class Combatant {
     protected int attack;
     protected int defense;
     protected int speed;
-    protected int mana;
-    protected int maxMana;
     protected List<StatusEffect> statusEffects;
     protected List<Item> inventory;
     protected boolean isDefending;
 
-    public Combatant(String name, int hp, int attack, int defense, int speed, int mana) {
+    public Combatant(String name, int hp, int attack, int defense, int speed) {
         this.name = name;
         this.hp = hp;
         this.maxHp = hp;
         this.attack = attack;
         this.defense = defense;
         this.speed = speed;
-        this.mana = mana;
-        this.maxMana = mana;
         this.statusEffects = new ArrayList<>();
         this.inventory = new ArrayList<>();
         this.isDefending = false;
@@ -89,14 +85,6 @@ public abstract class Combatant {
         this.hp = Math.min(maxHp, this.hp + amount);
     }
 
-    public void useMana(int amount) {
-        this.mana = Math.max(0, this.mana - amount);
-    }
-
-    public void restoreMana(int amount) {
-        this.mana = Math.min(maxMana, this.mana + amount);
-    }
-
     public void addStatusEffect(StatusEffect effect) {
         statusEffects.add(effect);
         effect.apply(this);
@@ -150,6 +138,5 @@ public abstract class Combatant {
 
     public abstract String getSpecialSkillName();
     public abstract String getSpecialSkillDescription();
-    public abstract int getSpecialSkillManaCost();
     public abstract void executeSpecialSkill(Combatant target, List<Combatant> allCombatants);
 }
