@@ -1,4 +1,5 @@
-package turnbasedcombat.domain;
+
+import turnbasedcombat.domain;
 
 import turnbasedcombat.domain.character.Combatant;
 import turnbasedcombat.domain.character.Goblin;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class Level {
     private final int levelNumber;
-    private final String levelName;
+    private final String difficultyName;
     private final List<Combatant> initialSpawns;
     private final List<Combatant> backupSpawns;
     private boolean backupTriggered;
