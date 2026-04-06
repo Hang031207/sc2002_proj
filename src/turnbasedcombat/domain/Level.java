@@ -6,10 +6,9 @@ import turnbasedcombat.domain.character.Wolf;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Level {
     private final int levelNumber;
-    private final String levelName;
+    private String difficultyName; // Removed final
     private final List<Combatant> initialSpawns;
     private final List<Combatant> backupSpawns;
     private boolean backupTriggered;
@@ -21,6 +20,7 @@ public class Level {
         this.backupTriggered = false;
         setupEnemies();
     }
+
     private void setupEnemies() {
         if (levelNumber == 1) {
             this.difficultyName = "Easy";
@@ -31,14 +31,12 @@ public class Level {
             this.difficultyName = "Medium";
             initialSpawns.add(new Goblin("Goblin"));
             initialSpawns.add(new Wolf("Wolf"));
-            
             backupSpawns.add(new Wolf("Wolf A"));
             backupSpawns.add(new Wolf("Wolf B"));
         } else if (levelNumber == 3) {
             this.difficultyName = "Hard";
             initialSpawns.add(new Goblin("Goblin A"));
             initialSpawns.add(new Goblin("Goblin B"));
-            
             backupSpawns.add(new Goblin("Goblin Backup"));
             backupSpawns.add(new Wolf("Wolf A"));
             backupSpawns.add(new Wolf("Wolf B"));
@@ -52,4 +50,3 @@ public class Level {
     public void setBackupTriggered(boolean triggered) { this.backupTriggered = triggered; }
     public String getDifficultyName() { return difficultyName; }
 }
-    

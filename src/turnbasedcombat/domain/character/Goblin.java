@@ -1,28 +1,23 @@
 package turnbasedcombat.domain.character;
 
+import turnbasedcombat.domain.strategy.EnemyStrategy;
+import turnbasedcombat.domain.strategy.BasicAttackStrategy;
+import turnbasedcombat.control.BattleEngine;
+import java.util.List;
+
 public class Goblin extends Combatant {
-    private static final int SNEAKY_STAB_MANA_COST = 10;
+    private EnemyStrategy strategy;
 
     public Goblin(String name) {
-        super(name, 50, 12, 4, 8, 20);
-    }
-
-    public Goblin() {
-        this("Goblin");
+        super(name, 55, 35, 15, 25);
+        this.strategy = new BasicAttackStrategy();
     }
 
     @Override
-    public String getSpecialSkillName() {
-        return "Sneaky Stab";
-    }
+    public void executeSpecialSkill(Combatant target, List<Combatant> allCombatants) {}
 
     @Override
-    public String getSpecialSkillDescription() {
-        return "A quick stab that ignores some defense.";
-    }
-
-    @Override
-    public int getSpecialSkillManaCost() {
-        return SNEAKY_STAB_MANA_COST;
+    public void takeTurn(BattleEngine engine) {
+        strategy.executeTurn(this, engine);
     }
 }

@@ -59,11 +59,11 @@ public class GameCLI {
     }
 
     public void displayCombatantStatus(Combatant combatant) {
-        System.out.printf("  %s: HP %d/%d | Mana %d/%d | ATK %d | DEF %d | SPD %d%n",
+        System.out.printf("  %s: HP %d/%d | ATK %d | DEF %d | SPD %d | Cooldown %d%n",
                 combatant.getName(),
                 combatant.getHp(), combatant.getMaxHp(),
-                combatant.getMana(), combatant.getMaxMana(),
-                combatant.getAttack(), combatant.getDefense(), combatant.getSpeed());
+                combatant.getAttack(), combatant.getDefense(), 
+                combatant.getSpeed(), combatant.getSpecialCooldown());
 
         List<StatusEffect> effects = combatant.getStatusEffects();
         if (!effects.isEmpty()) {
@@ -87,8 +87,7 @@ public class GameCLI {
         System.out.println("\nChoose an action:");
         System.out.println("  1. Basic Attack");
         System.out.println("  2. Defend");
-        System.out.printf("  3. %s (Cost: %d mana)%n",
-                combatant.getSpecialSkillName(), combatant.getSpecialSkillManaCost());
+        System.out.printf("  3. Special Skill (Cooldown: %d)%n", combatant.getSpecialCooldown());
 
         List<Item> inventory = combatant.getInventory();
         if (!inventory.isEmpty()) {
@@ -103,10 +102,10 @@ public class GameCLI {
             case 2:
                 return new Defend();
             case 3:
-                if (combatant.getMana() >= combatant.getSpecialSkillManaCost()) {
+                if (combatant.getSpecialCooldown() == 0) {
                     return new SpecialSkill();
                 } else {
-                    System.out.println("Not enough mana! Using Basic Attack instead.");
+                    System.out.println("Skill is on cooldown! Using Basic Attack instead.");
                     return new BasicAttack();
                 }
             case 4:
@@ -222,7 +221,5 @@ public class GameCLI {
         System.out.println("Group: xxx");
         System.out.println("Group members: xxx,yyy,zzz");
         System.out.println("=========================================\n");
-
-        // Additional setup or main menu logic can go here
     }
 }

@@ -118,6 +118,14 @@ public class BattleEngine {
         all.addAll(enemyTeam);
         return all;
     }
+
+    public List<Combatant> getAliveEnemies() {
+        List<Combatant> alive = new ArrayList<>();
+        for (Combatant c : enemyTeam) {
+            if (c.isAlive()) alive.add(c);
+        }
+        return alive;
+    }
     
     // Getters so Entities can access targets during takeTurn()
     public List<Combatant> getPlayerTeam() { return playerTeam; }

@@ -3,10 +3,10 @@ package turnbasedcombat.domain.effect;
 import turnbasedcombat.domain.character.Combatant;
 
 public interface StatusEffect {
-    void applyEffect(Combatant target);
-    void removeEffect(Combatant target);
-    void decrementDuration();
-    int getRemainingDuration();
+    void apply(Combatant target);
+    void remove(Combatant target);
+    void tick(Combatant target);
     boolean isExpired();
     String getName();
+    int getRemainingDuration();
 }
